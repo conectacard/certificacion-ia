@@ -1,32 +1,52 @@
-// CONTROL DE VISTAS (HOME <-> CURSO)
+// ================= CONTROL DE VISTAS (HOME <-> CURSO) =================
 async function mostrarVistaCurso() {
-    let codigoGuardado = localStorage.getItem('escuela_codigo_activo');
-
-    if (!codigoGuardado) {
-        let codigoIngresado = prompt("Ingresa el código de acceso de tu escuela para entrar al curso (8 días de vigencia):");
-        if (!codigoIngresado) {
-            return; // Si le da cancelar, no hace nada y se queda en el home
-        }
-        codigoGuardado = codigoIngresado.trim();
-    }
-
-    // Validar con Supabase
-    const resultado = await validarCodigoEscuela(codigoGuardado);
-
-    if (resultado.valido) {
-        localStorage.setItem('escuela_codigo_activo', codigoGuardado);
+    localStorage.removeItem('alumno_usuario_activo');
+    localStorage.removeItem('alumno_nombre_completo');
+        let usuarioInput = prompt("Ingresa tu nombre de usuario:");
+        if (!usuarioInput) return;
         
-        // Detener el video del home al salir
-        const iframeHome = document.getElementById('home-video');
-        if (iframeHome) iframeHome.src = "";
+        let passwordInput = prompt("Ingresa tu contraseña:");
+        if (!passwordInput) return;
 
-        document.getElementById('view-home').style.display = 'none';
-        document.getElementById('view-curso').style.display = 'flex';
-        cargarLeccionesNivel(1);
-    } else {
-        alert(resultado.mensaje);
-        localStorage.removeItem('escuela_codigo_activo');
+        try {
+            const { data, error } = await window.dbClienteDemo
+                .from('usuarios_alumnos')
+                .select('*')
+                .eq('usuario', usuarioInput.trim())
+                .eq('password_alumno', passwordInput.trim())
+                .maybeSingle();
+
+            if (error || !data) {
+                alert("Acceso denegado: Usuario o contraseña incorrectos.");
+                return;
+            }
+
+            localStorage.setItem('alumno_usuario_activo', data.usuario);
+            localStorage.setItem('alumno_nombre_completo', data.nombre_completo || data.usuario);
+
+        } catch (error) {
+                    console.error("Error al validar con Supabase:", error);
+                    alert("Error de conexión al validar tus datos.");
+                    return;
+                }
+            
+
+            // Detener el video del home al salir
+    const iframeHome = document.getElementById('home-video');
+    if (iframeHome) iframeHome.src = "";
+
+    // ABRIR EL AULA VIRTUAL Y OCULTAR EL INICIO
+    document.getElementById('view-home').style.display = 'none';
+    document.getElementById('view-curso').style.display = 'block';
+
+    // MOSTRAR NOMBRE DEL ALUMNO EN EL ENCABEZADO
+    const nombreAlumno = localStorage.getItem('alumno_nombre_completo') || localStorage.getItem('alumno_usuario_activo');
+    const userStatusElem = document.getElementById('user-status');
+    if (userStatusElem) {
+        userStatusElem.textContent = `Estudiante: ${nombreAlumno} | Licencia Vigente`;
     }
+
+    cargarLeccionesNivel(1);
 }
 
 function mostrarVistaHome() {
