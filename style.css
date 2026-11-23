@@ -30,12 +30,10 @@ body {
 .app-container {
     width: 100%;
     max-width: 920px;
-    min-height: 96vh;
     height: auto;
     background: var(--fondo-tarjeta);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 18px;
     border-radius: 16px;
     box-shadow: 0 15px 35px rgba(37, 99, 235, 0.2), 0 5px 15px rgba(0, 0, 0, 0.08);
@@ -254,7 +252,6 @@ body {
 /* ================= AJUSTE ESPECIAL PARA CELULARES Y PANTALLAS PEQUEÑAS ================= */
 @media (max-width: 768px) {
     .app-container {
-        min-height: 100vh;
         height: auto;
         max-height: none;
         padding: 10px;
