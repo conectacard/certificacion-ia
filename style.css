@@ -19,9 +19,7 @@
 body {
     background: linear-gradient(135deg, #CBD5E1 0%, #F1F5F9 100%);
     color: var(--texto-oscuro);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0;
     min-height: 100vh;
     overflow-x: hidden;
 }
